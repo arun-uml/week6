@@ -34,29 +34,28 @@ podTemplate(yaml: '''
             items:
             - key: .dockerconfigjson
               path: config.json
-''') {
+''') 
+{
   node(POD_LABEL) {
     stage('Build a gradle project') {
-		git 'https://github.com/arun-uml/Continuous-Delivery-with-Docker-and-Jenkins-Second-Edition.git'
+		git 'https://github.com/arun-uml/week6.git'
 		container('gradle') {
 			stage('Build a gradle project') {
 			  sh '''
-			  cd /home/jenkins/agent/workspace/week7/Chapter08/sample1
 			  chmod +x gradlew
 			  ./gradlew build
 			  mv ./build/libs/calculator-0.0.1-SNAPSHOT.jar /mnt
 			  '''
 			}
       
-
 		stage('Build Java Image') {
 		  container('kaniko') {
 			stage('Build a gradle project') {
 			  calc_file = 'master-calculator:1.0'
 			  if (env.BRANCH_NAME == 'feature')
 			    calc_file = 'feature-calculator:1.0'
-			  else if (env.BRANCH_NAME == "playground")
-                calc_file = "playground-calculator:1.0"
+			  else if (env.BRANCH_NAME == 'playground')
+                calc_file = 'playground-calculator:1.0'
 				
 			  sh '''
 			  echo 'FROM openjdk:8-jre' > Dockerfile
@@ -125,5 +124,6 @@ podTemplate(yaml: '''
 		}	
 	}
   }
+ }
 }
 }
