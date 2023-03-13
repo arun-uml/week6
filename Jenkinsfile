@@ -54,9 +54,9 @@ podTemplate(yaml: '''
 			stage('Build a gradle project') {
 			  calc_file = 'master-calculator:1.0'
 			  if (env.BRANCH_NAME == 'feature')
-			    calc_file = "feature-calculator:1.0'
-			  else if (env.BRANCH_NAME == "playground")
-                calc_file = "playground-calculator:1.0"
+			    calc_file = 'feature-calculator:1.0'
+			  else if (env.BRANCH_NAME == 'playground')
+                calc_file = 'playground-calculator:1.0'
 				
 			  sh '''
 			  echo 'FROM openjdk:8-jre' > Dockerfile
