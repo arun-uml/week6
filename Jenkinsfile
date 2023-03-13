@@ -34,7 +34,8 @@ podTemplate(yaml: '''
             items:
             - key: .dockerconfigjson
               path: config.json
-''') {
+''') 
+{
   node(POD_LABEL) {
     stage('Build a gradle project') {
 		git 'https://github.com/arun-uml/Continuous-Delivery-with-Docker-and-Jenkins-Second-Edition.git'
@@ -125,4 +126,5 @@ podTemplate(yaml: '''
 		}	
 	}
   }
+ }
 }
