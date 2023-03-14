@@ -52,27 +52,30 @@ podTemplate(yaml: '''
 		}
 	}
 	stage('Build Java Image') {
-	  container('kaniko') {
-		stage('Build a Java Image Kaniko') {
-		  calc_file = 'main-calculator:1.0'
-		  if (env.BRANCH_NAME == 'feature')
-			calc_file = 'feature-calculator:1.0'
-		  else if (env.BRANCH_NAME == 'playground')
-			calc_file = 'playground-calculator:1.0'
-			
-		  sh '''
-		  echo 'FROM openjdk:8-jre' > Dockerfile
-		  echo 'COPY ./calculator-0.0.1-SNAPSHOT.jar app.jar' >> Dockerfile
-		  echo 'ENTRYPOINT ["java", "-jar", "app.jar"]' >> Dockerfile
-		  mv /mnt/calculator-0.0.1-SNAPSHOT.jar .
-		  /kaniko/executor --context `pwd` --destination arunuml/''' + calc_file
+		if (env.BRANCH_NAME != 'playground')
+		{
+			echo "This ${env.BRANCH_NAME} branch"
+			container('kaniko') {
+				stage('Build a Java Image Kaniko') {
+					calc_file = 'main-calculator:1.0'
+					if (env.BRANCH_NAME == 'feature')
+						calc_file = 'feature-calculator:1.0'
+							
+					sh '''
+					echo 'FROM openjdk:8-jre' > Dockerfile
+					echo 'COPY ./calculator-0.0.1-SNAPSHOT.jar app.jar' >> Dockerfile
+					echo 'ENTRYPOINT ["java", "-jar", "app.jar"]' >> Dockerfile
+					mv /mnt/calculator-0.0.1-SNAPSHOT.jar .
+					/kaniko/executor --context `pwd` --destination arunuml/''' + calc_file
+				}
+			}
 		}
-	  }
+	  
 	}
 	
 	stage("Unit test") {
 	  echo "I am the ${env.BRANCH_NAME} branch"
-	  if (env.BRANCH_NAME == 'feature') {
+	  if (env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'feature') {
 		echo "Running Unit test on ${env.BRANCH_NAME} branch"	  
 		try {		  
 		  sh '''
@@ -108,7 +111,7 @@ podTemplate(yaml: '''
 		
 	stage("Code StyleCheck") {
 	  echo "I am the ${env.BRANCH_NAME} branch"
-	  if (env.BRANCH_NAME == 'feature') {	
+	  if (env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'feature') {	
 		echo "Running Code Style-check on ${env.BRANCH_NAME} branch"	  
 		try {
 		  sh '''
